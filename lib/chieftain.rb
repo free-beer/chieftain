@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require_relative "chieftain/version"
-
-module Chieftain
-  class Error < StandardError; end
-  # Your code goes here...
-end
+require_relative "chieftain/exceptions"
+require_relative "chieftain/convertors"
+require_relative "chieftain/command"
