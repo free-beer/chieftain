@@ -18,7 +18,7 @@ module Chieftain
   # A convertor floating point values.
   class FloatConvertor
     def convertible?(value)
-      value.to_f.to_s == value
+      value.to_f.to_s == "#{value}"
     end
 
     def convert(value)
@@ -29,7 +29,7 @@ module Chieftain
   # A convertor for integer values.
   class IntegerConvertor
     def convertible?(value)
-      value.to_i.to_s == value
+      value.to_i.to_s == "#{value}"
     end
 
     def convert(value)

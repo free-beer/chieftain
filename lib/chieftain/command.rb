@@ -54,7 +54,7 @@ module Chieftain
       @settings   = Command.parameters(self.class)
       @validators = Command.validators_for(self.class)
     end
-    attr_reader :errors, :parameters, :settings, :validators
+    attr_reader :convertors, :errors, :parameters, :settings, :validators
 
     # Test whether a given value is convertible for a named parameter. This will
     # return true if the parameter is expected and either has no type specified
@@ -88,7 +88,7 @@ module Chieftain
     # Returns a list of the expected parameters configured for a Command
     # instance.
     def expected_parameter_names
-      @settings.values.map(&:name)
+      @settings ? @settings.values.map(&:name) : []
     end
 
     # Tests whether a parameter name is among the parameters specified for the
@@ -97,29 +97,39 @@ module Chieftain
       expected_parameter_names.include?(parameter)
     end
 
-    # Retrieve the value for a name parameter. The value will be run through an
-    # applicable converted prior to being returned.
+    # Retrieve the value for a named parameter. The value will be run through an
+    # applicable converted prior to being returned. An exception will be raised
+    # if conversion fails. If the parameter is optional and has not be specified
+    # then conversion will not be attempted and nil will be returned.
     def get_parameter_value(name)
-      value    = get_raw_parameter_value(name)
-      settings = settings_for(name)
-      if settings.type
-        convertor = get_convertor(settings.type)
-        if !convertor.convertible?(value)
-          raise ParameterError.new("The value of the '#{name}' parameter cannot be converted to the '#{settings.type}' type.", name)
+      if expects?(name)
+        settings = settings_for(name)
+        if settings[:required] && !provided?(name)
+          raise ParameterError.new("A value has not been provided for the '#{name}' parameter.", name)
         end
-        value = convertor.convert(value)
+
+        if settings[:required] || provided?(name)
+          value     = get_raw_parameter_value(name)
+          convertor = get_convertor(settings.type)
+          if !convertor.convertible?(value)
+            raise ParameterError.new("The value of the '#{name}' parameter cannot be converted to the '#{settings.type}' type.", name)
+          end
+          convertor.convert(value)
+        else
+          nil
+        end
       else
-        value
+        raise ParameterError.new("Unknown parameter '#{name}' requested from a '#{self.class.name}' command instance.")
       end
     end
 
     # Fetches a name convertor from the list for the Command instance, raises
     # an exception if one cannot be found.
-    def get_convertor(name)
-      if !has_convertor?(name)
-        raise CommandError.new("Unable to locate the '#{name}' parameter convertor.")
+    def get_convertor(type)
+      if !has_convertor?(type)
+        raise CommandError.new("Unable to locate the '#{type}' parameter convertor.")
       end
-      @convertors[name]
+      @convertors[type]
     end
 
     # Fetches the raw, unaltered value specified for a name parameter to the
@@ -127,7 +137,7 @@ module Chieftain
     # given an explicit value. Raises an exception if an unknown parameter is
     # specified.
     def get_raw_parameter_value(name)
-      raise ParameterError("Unknown parameter '#{name}' requested in command.", name) if !expects?(name)
+      raise ParameterError.new("Unknown parameter '#{name}' requested in command.", name) if !expects?(name)
       @parameters[name]
     end
 
@@ -156,7 +166,7 @@ module Chieftain
     # Returns a list of the names of the parameters specified to the Command
     # instance.
     def parameter_names
-      parameters.keys
+      @settings.keys
     end
 
     # Derived command classes should override this method to do the work for the
@@ -169,7 +179,7 @@ module Chieftain
     # This method checks whether a name parameter is among those provided to a
     # Command instance.
     def provided?(name)
-      parameter_names.include?(name)
+      @parameters.include?(name)
     end
 
     # Returns a list of the names of the commands required parameters. Note a
