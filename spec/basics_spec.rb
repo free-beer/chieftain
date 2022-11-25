@@ -4,6 +4,8 @@ RSpec.describe Chieftain::Command do
   class BasicsTest < Chieftain::Command
     required :first, validations: [:not_nil]
     required :second, validations: [:not_nil]
+    optional :fourth, default: 123, type: :integer
+    optional :fifth, type: :integer
     attr_reader :third
 
     def perform()
@@ -71,5 +73,24 @@ RSpec.describe Chieftain::Command do
       end
     end
 
+    describe "that are optional" do
+      describe "but not specified" do
+        subject {
+          BasicsTest.new(first: "one", second: 222)
+        }
+
+        describe "and have a default" do
+          it "returns the default when the parameter is requested" do
+            expect(subject.fourth).to eq(123)
+          end
+        end
+
+        describe "but don't have a default and have a type" do
+          it "returns nil" do
+            expect(subject.fifth).to be_nil
+          end
+        end
+      end
+    end
   end
 end

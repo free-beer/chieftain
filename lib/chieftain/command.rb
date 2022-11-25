@@ -110,13 +110,17 @@ module Chieftain
 
         if settings[:required] || provided?(name)
           value     = get_raw_parameter_value(name)
-          convertor = get_convertor(settings.type)
-          if !convertor.convertible?(value)
-            raise ParameterError.new("The value of the '#{name}' parameter cannot be converted to the '#{settings.type}' type.", name)
+          if settings[:type]
+            convertor = get_convertor(settings.type)
+            if !convertor.convertible?(value)
+              raise ParameterError.new("The value of the '#{name}' parameter cannot be converted to the '#{settings.type}' type.", name)
+            end
+            convertor.convert(value)
+          else
+            value
           end
-          convertor.convert(value)
         else
-          nil
+          settings[:default]
         end
       else
         raise ParameterError.new("Unknown parameter '#{name}' requested from a '#{self.class.name}' command instance.")
