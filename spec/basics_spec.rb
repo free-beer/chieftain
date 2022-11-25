@@ -91,6 +91,24 @@ RSpec.describe Chieftain::Command do
           end
         end
       end
+
+      describe "and are specified" do
+        subject {
+          BasicsTest.new(first: "one", second: 222, fourth: 987, fifth: 123)
+        }
+
+        describe "with a default" do
+          it "returns the specified value" do
+            expect(subject.fourth).to eq(987)
+          end
+        end
+
+        describe "without a default" do
+          it "returns the specified value" do
+            expect(subject.fifth).to eq(123)
+          end
+        end
+      end
     end
   end
 end
