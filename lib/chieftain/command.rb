@@ -121,8 +121,8 @@ module Chieftain
           end
 
         else
+          raw_value = (provided?(name) ? get_raw_parameter_value(name) : settings[:default])
           if provided?(name)
-            raw_value = get_raw_parameter_value(name)
             if settings[:type]
               convertor = get_convertor(settings.type)
               if !convertor.convertible?(raw_value)
@@ -133,7 +133,7 @@ module Chieftain
               raw_value
             end
           else
-            settings[:default]
+            raw_value
           end
         end
       else
