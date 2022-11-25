@@ -108,19 +108,33 @@ module Chieftain
           raise ParameterError.new("A value has not been provided for the '#{name}' parameter.", name)
         end
 
-        if settings[:required] || provided?(name)
-          value     = get_raw_parameter_value(name)
+        if settings[:required]
+          raw_value = get_raw_parameter_value(name)
           if settings[:type]
             convertor = get_convertor(settings.type)
-            if !convertor.convertible?(value)
+            if !convertor.convertible?(raw_value)
               raise ParameterError.new("The value of the '#{name}' parameter cannot be converted to the '#{settings.type}' type.", name)
             end
-            convertor.convert(value)
+            convertor.convert(raw_value)
           else
-            value
+            raw_value
           end
+
         else
-          settings[:default]
+          if provided?(name)
+            raw_value = get_raw_parameter_value(name)
+            if settings[:type]
+              convertor = get_convertor(settings.type)
+              if !convertor.convertible?(raw_value)
+                raise ParameterError.new("The value of the '#{name}' parameter cannot be converted to the '#{settings.type}' type.", name)
+              end
+              convertor.convert(raw_value)
+            else
+              raw_value
+            end
+          else
+            settings[:default]
+          end
         end
       else
         raise ParameterError.new("Unknown parameter '#{name}' requested from a '#{self.class.name}' command instance.")
