@@ -7,6 +7,7 @@ Gem::Specification.new do |spec|
   spec.version = Chieftain::VERSION
   spec.authors = ["Peter Wood"]
   spec.email = ["pw0470@gmail.com"]
+  spec.licenses = ["Apache-2.0"]
 
   spec.summary = "An implementation of the Command design pattern in Ruby."
   spec.description = "An implementation of the command design pattern that attempts "\
@@ -15,7 +16,7 @@ Gem::Specification.new do |spec|
   spec.homepage = "https://github.com/free-beer/chieftain"
   spec.required_ruby_version = ">= 2.6.0"
 
-  spec.metadata["allowed_push_host"] = "TODO: Set to your gem server 'https://example.com'"
+  spec.metadata["allowed_push_host"] = "https://rubygems.org"
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/free-beer/chieftain"
