@@ -121,7 +121,14 @@ module Chieftain
           end
 
         else
-          raw_value = (provided?(name) ? get_raw_parameter_value(name) : settings[:default])
+          raw_value = nil
+          if provided?(name)
+            raw_value = get_raw_parameter_value(name)
+            raw_value = settings[:default] if raw_value.nil?
+          else
+            raw_value = settings[:default]
+          end
+
           if provided?(name)
             if settings[:type]
               convertor = get_convertor(settings.type)
