@@ -72,8 +72,8 @@ module Chieftain
     end
 
     # Register an error with the execution of the current Command.
-    def error(message)
-      @errors << Error.new(message)
+    def error(message, code=nil)
+      @errors << Error.new(message, code)
     end
 
     # Invokes the #perform() method if and only if the Command instance tests as
@@ -363,7 +363,7 @@ module Chieftain
     # Fetches the parameter list registered for a specific Command class
     # instance.
     def self.parameters(command_class)
-      @@parameters[command_class]
+      @@parameters[command_class] || {}
     end
 
     # Registers an optional parameter for the command. See the #parameter() method
