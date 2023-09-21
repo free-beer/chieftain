@@ -310,4 +310,14 @@ describe Chieftain::Command do
       expect(settings.type).to eq(:integer)
     end
   end
+
+  describe "when given string parameter keys" do
+    it "converts them to symbols for internal storage" do
+      command = Chieftain::Command.new("first" => 1, "second" => 2)
+      expect(command.parameters.keys).to include(:first)
+      expect(command.parameters.keys).to include(:second)
+      expect(command.parameters.keys).not_to include("first")
+      expect(command.parameters.keys).not_to include("second")
+    end
+  end
 end

@@ -50,7 +50,7 @@ module Chieftain
     def initialize(parameters={})
       @convertors = Command.convertors_for(self.class)
       @errors     = []
-      @parameters = {}.merge(parameters)
+      @parameters = {}.merge(parameters).inject({}) {|t,v| t[v[0].to_s.to_sym] = v[1]; t}
       @settings   = Command.parameters(self.class)
       @validators = Command.validators_for(self.class)
     end
