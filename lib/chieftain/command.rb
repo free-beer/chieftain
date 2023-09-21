@@ -312,7 +312,7 @@ module Chieftain
     def self.add_validator(name, &block)
       @@validators[self] = {} if !@@validators.include?(self)
       if @@validators[self].include?(name)
-        raise CommandError.new("Duplicate validator '#{name}' specified for the #{self.name} class.")
+        puts "[WARNING] The #{name} command validator has been overwritten."
       end
 
       if !block
